@@ -61,7 +61,7 @@ VALUES
     (2, 2, '2020-04-15', 150.00, 'Completado'),
     (3, 3, '2020-04-20', 200.00, 'Completado'),
     (4, 1, '2020-04-25', 1000.00, 'Pendiente'),
-    (5, 2, '2020-04-28', 1000.00, 'Pendiente');
+    (5, 2, '2024-09-10', 1000.00, 'Pendiente');
 
 INSERT INTO DetallesDePedidos (id_pedido, id_producto, cantidad, precio_unitario, descuento)
 VALUES
@@ -89,15 +89,14 @@ JOIN Clientes c ON p.id_cliente = c.id
 GROUP BY nombre, total_ventas
 ORDER BY total_ventas DESC;
 
--- 3. Total de ventas por cliente con ventas superiores a 1000
+-- 3. Total de ventas por cliente en el último mes
 SELECT c.nombre, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
 FROM DetallesDePedidos dp
 JOIN Pedidos p ON dp.id_pedido = p.id
 JOIN Clientes c ON p.id_cliente = c.id
+WHERE p.fecha >= DATE('ahora', '1 mes')
 GROUP BY c.nombre
-HAVING total_ventas > 1000
 ORDER BY total_ventas DESC;
-
 
 -- 4. Número de pedidos por cliente
 SELECT c.nombre, COUNT(p.id) AS numero_pedidos
@@ -115,13 +114,13 @@ JOIN Clientes c ON p.id_cliente = c.id
 GROUP BY c.nombre
 ORDER BY promedio_ventas DESC;
 
--- 6. Total de ventas por cliente con ventas superiores a 1000
-SELECT c.nombre, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
+-- 6. Total de ventas por cliente por categoría de producto
+SELECT c.nombre, pr.categoria, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
 FROM DetallesDePedidos dp
-JOIN Pedidos p ON dp.id_pedido = p.id
-JOIN Clientes c ON p.id_cliente = c.id
-GROUP BY c.nombre
-HAVING total_ventas > 1000
+JOIN Pedidos p ON dp.id = p.id
+JOIN Clientes c ON p.id = c.id
+JOIN Productos pr ON dp.id = pr.id
+GROUP BY c.nombre, pr.categoria
 ORDER BY total_ventas DESC;
 
 -- 7. Total de ventas por fecha con ventas superiores a 500
@@ -146,21 +145,7 @@ JOIN Clientes c ON p.id_cliente = c.id
 GROUP BY c.nombre
 ORDER BY productos_diferentes;
 
-
--- 10. Total de ventas por cliente
-SELECT c.nombre, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
-FROM DetallesDePedidos dp
-JOIN Pedidos p ON dp.id_pedido = p.id_pedido
-JOIN Clientes c ON p.id_cliente = c.id
-GROUP BY c.nombre
-ORDER BY total_ventas DESC;
+-- 10. 
 
 
--- 11. Muestra el nombre del cliente y el total de ventas, pero con un error de sintaxis en la cláusula SELECT
-SELECT c.nombre, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
-FROM DetallesDePedidos dp
-JOIN Pedidos p ON dp.id_pedido = p.id
-JOIN Clientes c ON p.id_cliente = c.id
-GROUP BY c.nombre
-ORDER BY total_ventas DESC
-SELECT total_ventas > 1000; -- ERROR
+
