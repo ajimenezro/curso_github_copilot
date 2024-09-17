@@ -72,7 +72,7 @@ VALUES
     (4, 1, 2, 500.00, 0.00),
     (5, 5, 1, 1000.00, 0.00);
     
--- 1.  Muestra el nombre del cliente y el total de ventas, ordenando por total de ventas en orden descendente
+-- 1.  Muestra el nombre del cliente y el total de ventas que tengan ventas superiores a 1000 y ordenando por total de ventas en orden descendente
 SELECT nombre, SUM(precio_unitario * cantidad) AS total_ventas
 FROM DetallesDePedidos dp
 JOIN Pedidos p ON dp.id_pedido = p.id
@@ -89,7 +89,7 @@ JOIN Clientes c ON p.id_cliente = c.id
 GROUP BY nombre, total_ventas
 ORDER BY total_ventas DESC;
 
--- 3. Muestra el nombre del cliente y el total de ventas, agrupando por nombre y fecha, ordenando por total de ventas en orden descendente
+-- 3. Total de ventas por cliente con ventas superiores a 1000
 SELECT c.nombre, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
 FROM DetallesDePedidos dp
 JOIN Pedidos p ON dp.id_pedido = p.id
@@ -99,7 +99,7 @@ HAVING total_ventas > 1000
 ORDER BY total_ventas DESC;
 
 
--- 4. Muestra el nombre del cliente y el total de ventas, agrupando por nombre, ordenando por total de ventas en orden descendente y filtrando por total de ventas mayor a 1000
+-- 4. Número de pedidos por cliente
 SELECT c.nombre, COUNT(p.id) AS numero_pedidos
 FROM Clientes c
 JOIN Pedidos p ON c.id = p.id_cliente
@@ -107,7 +107,7 @@ GROUP BY c.nombre
 ORDER BY numero_pedidos;
 
 
--- 5. Muestra la fecha del pedido y el total de ventas, agrupando por fecha, ordenando por total de ventas en orden descendente y filtrando por total de ventas mayor a 500
+-- 5. Promedio de ventas por cliente
 SELECT c.nombre, AVG(SUM(dp.precio_unitario * dp.cantidad)) AS promedio_ventas
 FROM DetallesDePedidos dp
 JOIN Pedidos p ON dp.id_pedido = p.id
@@ -115,7 +115,7 @@ JOIN Clientes c ON p.id_cliente = c.id
 GROUP BY c.nombre
 ORDER BY promedio_ventas DESC;
 
--- 6. Muestra el estado del pedido y el total de pedidos, agrupando por estado, ordenando por total de pedidos en orden descendente
+-- 6. Total de ventas por cliente con ventas superiores a 1000
 SELECT c.nombre, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
 FROM DetallesDePedidos dp
 JOIN Pedidos p ON dp.id_pedido = p.id
@@ -124,7 +124,7 @@ GROUP BY c.nombre
 HAVING total_ventas > 1000
 ORDER BY total_ventas DESC;
 
--- 7. Muestra el nombre del cliente y el número de pedidos, agrupando por nombre, ordenando por número de pedidos en orden ascendente
+-- 7. Total de ventas por fecha con ventas superiores a 500
 SELECT p.fecha, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
 FROM DetallesDePedidos dp
 JOIN Pedidos p ON dp.id_pedido = p.id
@@ -132,13 +132,13 @@ GROUP BY p.fecha
 ORDER BY total_ventas DESC
 WHERE total_ventas > 500;
 
--- 8. Muestra el nombre del cliente y el número de productos diferentes comprados, agrupando por nombre, ordenando por número de productos diferentes en orden descendente
+-- 8. Total de pedidos por estado
 SELECT p.estado, COUNT(p.id) AS total_pedidos
 FROM Pedidos p
 GROUP BY p.estado
 ORDER total_pedidos DESC;
 
--- 9. Muestra el nombre del cliente y el total de ingresos, agrupando por nombre, ordenando por total de ingresos en orden descendente
+-- 9. Número de productos diferentes por cliente
 SELECT c.nombre, COUNT(DISTINCT dp.id_producto) AS productos_diferentes
 FROM DetallesDePedidos dp
 JOIN Pedidos p ON dp.id_pedido = p.id
@@ -147,10 +147,20 @@ GROUP BY c.nombre
 ORDER BY productos_diferentes;
 
 
--- 10. Muestra el nombre del cliente y el total de ventas, cruzando las tablas Pedidos y DetallesDePedidos de manera errónea
+-- 10. Total de ventas por cliente
 SELECT c.nombre, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
 FROM DetallesDePedidos dp
 JOIN Pedidos p ON dp.id_pedido = p.id_pedido
 JOIN Clientes c ON p.id_cliente = c.id
 GROUP BY c.nombre
 ORDER BY total_ventas DESC;
+
+
+-- 11. Muestra el nombre del cliente y el total de ventas, pero con un error de sintaxis en la cláusula SELECT
+SELECT c.nombre, SUM(dp.precio_unitario * dp.cantidad) AS total_ventas
+FROM DetallesDePedidos dp
+JOIN Pedidos p ON dp.id_pedido = p.id
+JOIN Clientes c ON p.id_cliente = c.id
+GROUP BY c.nombre
+ORDER BY total_ventas DESC
+SELECT total_ventas > 1000; -- ERROR
